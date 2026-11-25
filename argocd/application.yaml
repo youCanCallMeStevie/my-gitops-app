@@ -1,0 +1,23 @@
+# Argo CD Application: tells Argo CD "watch this repo path and keep the cluster in sync with it".
+# Replace YOUR_GITHUB_USERNAME before applying.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hello-gitops
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/YOUR_GITHUB_USERNAME/my-gitops-app.git
+    targetRevision: main
+    path: app
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: hello-gitops
+  syncPolicy:
+    # Leave "automated" commented out at first so you click Sync yourself and see what happens.
+    # automated:
+    #   prune: true
+    #   selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
