@@ -23,7 +23,7 @@ spec:
       labels:
         app: hello-gitops
       annotations:
-        release: '9'
+        release: '10'
     spec:
       containers:
       - name: web
