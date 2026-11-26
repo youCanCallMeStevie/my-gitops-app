@@ -13,32 +13,33 @@ spec:
   strategy:
     canary:
       steps:
-      - setWeight: 20
-      - pause: {}
-      - setWeight: 60
-      - pause:
-          duration: 30s
+        - setWeight: 20
+        - pause: {}
+        - setWeight: 60
+        - pause: {duration: 30s}
   template:
     metadata:
       labels:
         app: hello-gitops
+      annotations:
+        release: "0"
     spec:
       containers:
-      - name: web
-        image: nginx:1.27.5-alpine
-        ports:
-        - containerPort: 80
-        volumeMounts:
-        - name: page
-          mountPath: /usr/share/nginx/html
-        resources:
-          requests:
-            cpu: 25m
-            memory: 32Mi
-          limits:
-            cpu: 100m
-            memory: 64Mi
+        - name: web
+          image: nginx:1.27.5-alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: page
+              mountPath: /usr/share/nginx/html
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
       volumes:
-      - name: page
-        configMap:
-          name: hello-gitops-page
+        - name: page
+          configMap:
+            name: hello-gitops-page
