@@ -5,7 +5,7 @@ metadata:
   labels:
     app: hello-gitops
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: hello-gitops
@@ -15,21 +15,21 @@ spec:
         app: hello-gitops
     spec:
       containers:
-        - name: web
-          image: nginx:1.27-alpine
-          ports:
-            - containerPort: 80
-          volumeMounts:
-            - name: page
-              mountPath: /usr/share/nginx/html
-          resources:
-            requests:
-              cpu: 25m
-              memory: 32Mi
-            limits:
-              cpu: 100m
-              memory: 64Mi
-      volumes:
+      - name: web
+        image: nginx:1.27-alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
         - name: page
-          configMap:
-            name: hello-gitops-page
+          mountPath: /usr/share/nginx/html
+        resources:
+          requests:
+            cpu: 25m
+            memory: 32Mi
+          limits:
+            cpu: 100m
+            memory: 64Mi
+      volumes:
+      - name: page
+        configMap:
+          name: hello-gitops-page
