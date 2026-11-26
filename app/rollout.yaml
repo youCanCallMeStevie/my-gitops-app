@@ -1,0 +1,46 @@
+# Replaces app/deployment.yaml. Same app, but managed by Argo Rollouts so releases can be canaried.
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: hello-gitops
+  labels:
+    app: hello-gitops
+spec:
+  replicas: 3
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: hello-gitops
+  strategy:
+    canary:
+      # No ingress or service mesh, so traffic is split by pod count (replica-based canary).
+      steps:
+        - setWeight: 20      # about 1 of 3 pods runs the new version
+        - pause: {}          # waits here until promoted (from Harness, the CLI or the Argo CD UI)
+        - setWeight: 60      # about 2 of 3 pods
+        - pause: {duration: 30s}
+        # then 100%
+  template:
+    metadata:
+      labels:
+        app: hello-gitops
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: page
+              mountPath: /usr/share/nginx/html
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+      volumes:
+        - name: page
+          configMap:
+            name: hello-gitops-page
